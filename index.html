@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lead Generation Tool</title>
+</head>
+<body>
+    <h1>Lead Generation Tool</h1>
+    <form id="leadForm">
+        <label for="niche">Niche/Industry:</label><br>
+        <input type="text" id="niche" name="niche"><br>
+        <label for="location">Location:</label><br>
+        <input type="text" id="location" name="location"><br>
+        <label for="numContacts">Number of Contacts (max 100):</label><br>
+        <input type="number" id="numContacts" name="numContacts" min="1" max="100" value="50"><br><br>
+        <button type="submit">Generate Leads</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('leadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const niche = document.getElementById('niche').value;
+            const location = document.getElementById('location').value;
+            const numContacts = document.getElementById('numContacts').value;
+
+            document.getElementById('results').innerText = "Generating data...";
+
+            fetch('YOUR_PYTHON_ANYWHERE_API_ENDPOINT', { // Replace with your API endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ niche: niche, location: location, num_contacts: numContacts }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === "success"){
+                    let downloadLink = document.createElement("a");
+                    downloadLink.href = data.excel_file_url; // The URL of the excel file
+                    downloadLink.innerText = "Download Excel";
+                    document.getElementById("results").innerText = "";
+                    document.getElementById("results").appendChild(downloadLink);
+                } else {
+                     document.getElementById('results').innerText = `Error : ${data.message}`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('results').innerText = `Error : ${error}`;
+            });
+        });
+    </script>
+</body>
+</html>
